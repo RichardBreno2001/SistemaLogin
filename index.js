@@ -11,6 +11,21 @@ app.get('/',(req,res)=>{
 })
 
 
-app.listen(3000,()=>{
-    console.log('Ouvindo porta 3000')
-})
+//Pegando variavéis do .env
+
+const DBuser = process.env.DB_USER
+const DBpassword = process.env.DB_PASSWORD
+
+//Conectando ao banco de dados
+
+mongoose.
+        connect(`mongodb+srv://RichardBreno:${DBpassword}@cluster0.rfkevo9.mongodb.net/?retryWrites=true&w=majority`)
+        .then(()=>{
+            app.listen(3000,()=>{
+                console.log('Ouvindo porta 3000')
+            })
+            console.log('Conectou ao banco!')
+        })
+        .catch(erro=>{
+            console.log('Deu erro' + erro)
+        })
