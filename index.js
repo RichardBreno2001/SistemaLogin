@@ -29,3 +29,49 @@ mongoose.
         .catch(erro=>{
             console.log('Deu erro' + erro)
         })
+
+//Fazendo o registro do usuário
+
+const ObjetoModel = require('./models/Objeto_model')
+
+app.post('/autenticar/registrar',async(req,res)=>{
+    let {nome,email,senha,confirmarSenha} = req.body
+
+    if(!nome) {
+        return res.status(422).json({msg:"O nome é obrigratório"})
+    }
+    
+    if(!email) {
+        return res.status(422).json({msg:"O email é obrigratório"})
+    }
+    
+    if(!senha) {
+        return res.status(422).json({msg:"A senha é obrigratória"})
+    }
+    
+    if(senha !== confirmarSenha) {
+        return res.status(422).json({msg:"As senhas não correspondem"})
+    }
+
+
+    //Criando a senha
+
+    const salt = await bcrypt.genSalt(12)
+    const senhaHash = await bcrypt.hash(senha,salt)
+
+    //Criar usuário
+
+    const ObjetoModelUser = new ObjetoModel({
+        nome,
+        email,
+        senha:senhaHash
+    })
+
+    try{
+         await ObjetoModelUser.save()
+    } catch {
+        console.log('Ocorreu um erro' + erro)
+        res.status(404).json({msg:"Ocorreu um erro"})
+    }
+       
+})
