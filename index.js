@@ -10,6 +10,9 @@ app.get('/',(req,res)=>{
     res.send('testando rota principal')
 })
 
+//Permitindo que a aplicação leia JSON
+app.use(express.json())
+
 
 //Pegando variavéis do .env
 
@@ -53,6 +56,15 @@ app.post('/autenticar/registrar',async(req,res)=>{
         return res.status(422).json({msg:"As senhas não correspondem"})
     }
 
+    //Verificando se o email já foi utilizado
+
+    const Verificar = await new ObjetoModel({
+        email:email
+    })
+
+    if(Verificar) {
+        return res.status(422).json({msg:"Email já utilizado, use outro!"})
+    }
 
     //Criando a senha
 
@@ -69,6 +81,7 @@ app.post('/autenticar/registrar',async(req,res)=>{
 
     try{
          await ObjetoModelUser.save()
+         res.json({msg:"Usuário salvo"})
     } catch {
         console.log('Ocorreu um erro' + erro)
         res.status(404).json({msg:"Ocorreu um erro"})
