@@ -58,7 +58,7 @@ app.post('/autenticar/registrar',async(req,res)=>{
 
     //Verificando se o email já foi utilizado
 
-    const Verificar = await new ObjetoModel({
+    const Verificar = await ObjetoModel.findOne({
         email:email
     })
 
@@ -82,9 +82,31 @@ app.post('/autenticar/registrar',async(req,res)=>{
     try{
          await ObjetoModelUser.save()
          res.json({msg:"Usuário salvo"})
-    } catch {
+    } catch(erro) {
         console.log('Ocorreu um erro' + erro)
         res.status(404).json({msg:"Ocorreu um erro"})
     }
        
 })
+
+//Rota de login
+
+app.post('/autenticar/login', async(req,res)=>{
+    let {email,senha} = req.body
+
+    if(!email) {
+        return res.status(422).json({msg:"O email é obrigatório"})
+    } 
+
+    if(!senha) {
+        return res.status(422).json({msg:"A senha é obrigatória"})
+    }
+
+    //Verificando se o usuário está cadastrado 
+
+    const VerificarUser = await ObjetoModel.findOne({email:email})
+
+    if(!VerificarUser) {
+        return res.status(404).json({msg:"Usuário não encontrado"})
+    } 
+}) 
