@@ -109,4 +109,27 @@ app.post('/autenticar/login', async(req,res)=>{
     if(!VerificarUser) {
         return res.status(404).json({msg:"Usuário não encontrado"})
     } 
+
+    //Verificando se a senha está correta
+
+    const VerificarSenha = await bcrypt.compare(senha,VerificarUser.senha)
+
+    if(!VerificarSenha) {
+        return res.status(422).json({msg:"Senha incorreta"})
+    }
+
+    //Retornando o token após a autenticação do usuário
+
+    try{
+        const secret = process.env.SECRET
+
+        const token = jwt.sign({
+            id: VerificarUser._id
+        }, secret)
+
+        res.status(200).json({msg:"Autenticação feita " + token})
+    } catch(erro) {
+        console.log('Ocorreu um erro' + erro)
+        res.json({msg:"Ocorreu um erro"})
+    }
 }) 
