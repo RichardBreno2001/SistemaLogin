@@ -133,3 +133,22 @@ app.post('/autenticar/login', async(req,res)=>{
         res.json({msg:"Ocorreu um erro"})
     }
 }) 
+
+
+//Rota protegida 
+
+app.get('/user/:id', async(req,res)=>{
+
+    //pegando ID da URL
+    const id = req.params.id
+
+    //Verificando se o usuário existe
+
+    const VerificarUser = await ObjetoModel.findById(id,'-senha')
+
+    if(!VerificarUser) {
+        return res.status(404).json({msg:"Usuário não está cadastrado"})
+    }
+
+    res.status(200).json({msg:VerificarUser})
+})
